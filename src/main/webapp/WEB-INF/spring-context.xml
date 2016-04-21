@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context-4.1.xsd
+		http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc-4.1.xsd">
+
+	<context:component-scan base-package="com.digicel.selfcare.web.controller" />
+
+	<mvc:annotation-driven>
+		<mvc:argument-resolvers>
+			<bean class="org.springframework.mobile.device.DeviceWebArgumentResolver" />
+		</mvc:argument-resolvers>
+	</mvc:annotation-driven>
+
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/**" />
+			<bean
+				class="org.springframework.mobile.device.DeviceResolverHandlerInterceptor" />
+		</mvc:interceptor>
+		<mvc:interceptor>
+			<mvc:mapping path="/**" />
+			<bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+				<property name="paramName" value="lang" />
+			</bean>
+		</mvc:interceptor>
+		<mvc:interceptor>
+			<mvc:mapping path="/**" />
+			<bean class="com.digicel.selfcare.web.interceptor.Interceptor">
+			</bean>
+		</mvc:interceptor>
+	</mvc:interceptors>
+
+	<bean id="SeflcareWebConfigurationManager" class="com.digicel.selfcare.web.config.ConfigurationManager">
+		<constructor-arg name="fileName" value="selfcare-web.xml" />
+	</bean>
+
+	<bean id="SeflcareWebHttpDataConnection" class="com.digicel.selfcare.web.httpservice.HttpDataConnection">
+		<constructor-arg name="config"
+			value="#{SeflcareWebConfigurationManager.selfcareConfig}" />
+	</bean>
+
+	<bean id="SeflcareWebDataStore" class="com.digicel.selfcare.web.cache.DataStoreSessionImpl">
+	</bean>
+
+	<bean id="SeflcareWebUserData" class="com.digicel.selfcare.web.cache.UserData">
+		<constructor-arg name="dataStore" ref="SeflcareWebDataStore" />
+	</bean>
+
+	<bean id="SeflcareWebAccessTokenDeserializer" class="com.digicel.selfcare.web.gson.GSONDeserializerImpl">
+	</bean>
+
+	<bean id="SeflcareWebAccessTokenService"
+		class="com.digicel.selfcare.web.service.oauth.AccessTokenService">
+		<constructor-arg name="dataConnection" ref="SeflcareWebHttpDataConnection" />
+		<constructor-arg name="userData" ref="SeflcareWebUserData" />
+		<constructor-arg name="config"
+			ref="SeflcareWebConfigurationManager" />
+	</bean>
+
+	<bean id="SeflcareWebAuthenticationDataConnection"
+		class="com.digicel.selfcare.web.service.oauth.AuthenticationDataConnection">
+		<constructor-arg name="dataConnection" ref="SeflcareWebHttpDataConnection" />
+		<constructor-arg name="deserializer"
+			ref="SeflcareWebAccessTokenDeserializer" />
+		<constructor-arg name="userData" ref="SeflcareWebUserData" />
+		<constructor-arg name="accessTokenService" ref="SeflcareWebAccessTokenService" />
+	</bean>
+
+	<bean id="SeflcareWebDataService" class="com.digicel.selfcare.web.service.DataService">
+		<constructor-arg name="dataConnection" ref="SeflcareWebHttpDataConnection" />
+		<constructor-arg name="userData" ref="SeflcareWebUserData" />
+		<constructor-arg name="config"
+			ref="SeflcareWebConfigurationManager" />
+	</bean>
+
+	<bean id="SeflcareWebDataCache" class="com.digicel.selfcare.web.cache.DataCache">
+		<constructor-arg name="dataService" ref="SeflcareWebDataService" />
+		<constructor-arg name="config"
+			value="#{SeflcareWebConfigurationManager.globalConfig}" />
+	</bean>
+
+	<bean id="SeflcareWebUserService" class="com.digicel.selfcare.web.service.UserService">
+		<constructor-arg name="dataConnection"
+			ref="SeflcareWebAuthenticationDataConnection" />
+		<constructor-arg name="userData" ref="SeflcareWebUserData" />
+		<constructor-arg name="config"
+			ref="SeflcareWebConfigurationManager" />
+	</bean>
+
+	<bean id="SeflcareWebHomeService" class="com.digicel.selfcare.web.service.HomeService">
+		<constructor-arg name="dataConnection"
+			ref="SeflcareWebAuthenticationDataConnection" />
+		<constructor-arg name="userData" ref="SeflcareWebUserData" />
+		<constructor-arg name="config"
+			ref="SeflcareWebConfigurationManager" />
+	</bean>
+
+	<bean id="SeflcareWebPlansService" class="com.digicel.selfcare.web.service.PlansServiceFake">
+		<constructor-arg name="dataConnection"
+			ref="SeflcareWebAuthenticationDataConnection" />
+		<constructor-arg name="userData" ref="SeflcareWebUserData" />
+		<constructor-arg name="config"
+			ref="SeflcareWebConfigurationManager" />
+	</bean>
+
+	<bean id="EnterprisePlansService" class="com.digicel.selfcare.web.service.EnterprisePlansServiceFake">
+		<constructor-arg name="dataConnection" ref="SeflcareWebHttpDataConnection" />
+		<constructor-arg name="userData" ref="SeflcareWebUserData" />
+		<constructor-arg name="config"
+			ref="SeflcareWebConfigurationManager" />
+	</bean>
+	
+	<bean id="EnterpriseAAAService" class="com.digicel.selfcare.web.service.EnterpriseAAAService">
+		<constructor-arg name="dataConnection" ref="SeflcareWebHttpDataConnection" />
+		<constructor-arg name="userData" ref="SeflcareWebUserData" />
+		<constructor-arg name="config"
+			ref="SeflcareWebConfigurationManager" />
+	</bean>
+
+	<bean id="SeflcareWebSharedPlansService" class="com.digicel.selfcare.web.service.SharedPlansService">
+		<constructor-arg name="dataConnection"
+			ref="SeflcareWebAuthenticationDataConnection" />
+		<constructor-arg name="userData" ref="SeflcareWebUserData" />
+		<constructor-arg name="config"
+			ref="SeflcareWebConfigurationManager" />
+	</bean>
+
+	<bean id="SeflcareWebBalanceService" class="com.digicel.selfcare.web.service.BalanceService">
+		<constructor-arg name="dataConnection"
+			ref="SeflcareWebAuthenticationDataConnection" />
+		<constructor-arg name="userData" ref="SeflcareWebUserData" />
+		<constructor-arg name="config"
+			ref="SeflcareWebConfigurationManager" />
+	</bean>
+	
+	<bean id="SeflcareWebEnterpriseBalanceService" class="com.digicel.selfcare.web.service.EnterpriseBalanceService">
+		<constructor-arg name="dataConnection"
+			ref="SeflcareWebHttpDataConnection" />
+		<constructor-arg name="userData" ref="SeflcareWebUserData" />
+		<constructor-arg name="config"
+			ref="SeflcareWebConfigurationManager" />
+	</bean>
+
+	<bean id="SeflcareWebSendCreditsService" class="com.digicel.selfcare.web.service.SendCreditsService">
+		<constructor-arg name="dataConnection"
+			ref="SeflcareWebAuthenticationDataConnection" />
+		<constructor-arg name="userData" ref="SeflcareWebUserData" />
+		<constructor-arg name="config"
+			ref="SeflcareWebConfigurationManager" />
+	</bean>
+
+	<bean id="SeflcareWebCreditMeService" class="com.digicel.selfcare.web.service.CreditMeService">
+		<constructor-arg name="dataConnection"
+			ref="SeflcareWebAuthenticationDataConnection" />
+		<constructor-arg name="userData" ref="SeflcareWebUserData" />
+		<constructor-arg name="config"
+			ref="SeflcareWebConfigurationManager" />
+	</bean>
+
+	<bean id="SeflcareWebCallMeService" class="com.digicel.selfcare.web.service.CallMeService">
+		<constructor-arg name="dataConnection"
+			ref="SeflcareWebAuthenticationDataConnection" />
+		<constructor-arg name="userData" ref="SeflcareWebUserData" />
+		<constructor-arg name="config"
+			ref="SeflcareWebConfigurationManager" />
+	</bean>
+
+	<bean id="SeflcareWebRefillService" class="com.digicel.selfcare.web.service.RefillService">
+		<constructor-arg name="dataConnection"
+			ref="SeflcareWebAuthenticationDataConnection" />
+		<constructor-arg name="userData" ref="SeflcareWebUserData" />
+		<constructor-arg name="config"
+			ref="SeflcareWebConfigurationManager" />
+	</bean>
+	
+	<bean id="SeflcareWebEnterpriseRefillService" class="com.digicel.selfcare.web.service.EnterpriseRefillService">
+		<constructor-arg name="dataConnection"
+			ref="SeflcareWebHttpDataConnection" />
+		<constructor-arg name="userData" ref="SeflcareWebUserData" />
+		<constructor-arg name="config"
+			ref="SeflcareWebConfigurationManager" />
+	</bean>
+
+	<bean id="SeflcareWebSocialService" class="com.digicel.selfcare.web.service.social.SocialService">
+		<constructor-arg name="dataConnection"
+			ref="SeflcareWebAuthenticationDataConnection" />
+		<constructor-arg name="userData" ref="SeflcareWebUserData" />
+		<constructor-arg name="config"
+			ref="SeflcareWebConfigurationManager" />
+	</bean>
+
+	<bean id="SeflcareWebWhatsNewService" class="com.digicel.selfcare.web.service.WhatsNewService">
+		<constructor-arg name="dataConnection"
+			ref="SeflcareWebAuthenticationDataConnection" />
+		<constructor-arg name="userData" ref="SeflcareWebUserData" />
+		<constructor-arg name="config"
+			ref="SeflcareWebConfigurationManager" />
+	</bean>
+
+	<bean id="SeflcareWebQuickLinksService" class="com.digicel.selfcare.web.service.QuickLinksService">
+		<constructor-arg name="dataConnection"
+			ref="SeflcareWebAuthenticationDataConnection" />
+		<constructor-arg name="userData" ref="SeflcareWebUserData" />
+		<constructor-arg name="config"
+			ref="SeflcareWebConfigurationManager" />
+	</bean>
+
+	<bean id="SeflcareWebDigihelpService" class="com.digicel.selfcare.web.service.DigihelpService">
+		<constructor-arg name="dataConnection" ref="SeflcareWebHttpDataConnection" />
+		<constructor-arg name="userData" ref="SeflcareWebUserData" />
+		<constructor-arg name="config"
+			ref="SeflcareWebConfigurationManager" />
+	</bean>
+
+	<bean id="ReCaptchaService" class="com.digicel.selfcare.web.recaptcha.ReCaptchaService">
+		<constructor-arg name="connection" ref="SeflcareWebHttpDataConnection" />
+		<constructor-arg name="configuration"
+			ref="SeflcareWebConfigurationManager" />
+	</bean>
+
+	<bean id="SeflcareWebEmailService" class="com.digicel.selfcare.web.service.EmailService">
+	</bean>
+
+	<bean id="SeflcareWebMyPlansCategoryModelFactory"
+		class="com.digicel.selfcare.web.model.myplans.MyPlansCategoryModelFactory">
+	</bean>
+
+	<bean id="SeflcareWebBalanceSummaryModelFactory"
+		class="com.digicel.selfcare.web.model.mybalance.BalanceSummaryModelFactory">
+	</bean>
+	
+	<bean id="viewResolver"
+		class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+		<property name="viewClass">
+			<value>
+				org.springframework.web.servlet.view.tiles3.TilesView
+			</value>
+		</property>
+	</bean>
+
+	<bean id="tilesConfigurer"
+		class="org.springframework.web.servlet.view.tiles3.TilesConfigurer">
+		<property name="definitions">
+			<list>
+				<value>/WEB-INF/tiles.xml</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="maxUploadSize" value="10000000" />
+	</bean>
+
+	<bean id="localeResolver"
+		class="org.springframework.web.servlet.i18n.CookieLocaleResolver">
+		<property name="cookieName" value="mydigicellang" />
+		<property name="cookieMaxAge" value="31536000" />
+		<property name="cookiePath" value="/" />
+	</bean>
+
+
+	<bean id="messageSource"
+		class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+		<property name="basename" value="classpath:messages" />
+		<property name="defaultEncoding" value="UTF-8" />
+	</bean>
+
+</beans>

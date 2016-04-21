@@ -1,0 +1,32 @@
+/* Custom Stylesheet */
+/**
+ * Use this file to override Materialize files so you can update
+ * the core Materialize files in the future
+ *
+ * Made By MaterializeCSS.com
+ */
+
+.icon-block {
+  padding: 0 15px;
+}
+.icon-block .material-icons {
+	font-size: inherit;
+}
+body {
+    background-image: url("images/let-s-party.png");
+    background-repeat: no-repeat;
+}
+.enter-info-block {
+	margin-top: 50px;
+  	background-color: #ccffffff;
+  	padding: 15px;
+    align-items: center;
+    width: 600px
+}
+.data-to-enter {
+	width: 500px;
+}
+.submit-btn {
+	align-items: center;
+	text-align: center;
+}
