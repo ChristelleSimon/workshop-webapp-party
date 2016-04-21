@@ -21,37 +21,6 @@
 			<h2>${greeting}</h2>
 			
 	        <form  method="get" action="congrats">
-				<!-- <div class="lighten-5 z-depth-1 enter-info-block">
-					<div class="row">
-						<div class="input-field col s12 data-to-enter">
-							<input type="text" value="" placeholder="Jhon Smith" required  >
-							<label class="active" for="telephone">Name</label>
-						</div>
-						<div class="input-field col s12 data-to-enter">
-							<input id="mobile" type="tel" pattern="[0-9]+" value="" placeholder="03123456" required  >
-							<label class="active" for="telephone">Telephone</label>
-						</div>
-						<div class="input-field col s12 data-to-enter">
-							<input  id="email" type="email" value="" placeholder="name@email.com" required>
-							<label class="active" for="email">Email</label>
-						</div>
-					</div>	
-				</div>
-				
-				<a class="waves-effect waves-light btn red submit-btn" type="submit"><input type="submit" value="Register"/></a>
-				<script  id="register" type="text/template7">
-					<div class="center-align">
-						{{#if id}}
-							<button type="button"
-							class="waves-effect waves-light btn-large digi-red"
-							onclick="enterPriseActivatePlan('activate-{{id}}');" data-id="{{id}}"
-							data-activate-message='{{js "activatePlanMessageFormat.printf(this.name, this.price)"}}'
-							data-button-text="{{buttonText}}"
-							data-is-carousel="false" id="activate-{{id}}">{{buttonText}}</button>
-						{{/if}}
-					</div>
-				</script> -->
-				
 			</form>
 			
 	    </div>
